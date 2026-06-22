@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Passport Strength & Global Mobility Inequality</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- ================= LANDING PAGE ================= -->
+
+    <section id="hero" class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-label">
+                PASSPORT MOBILITY INDEX
+            </div>
+
+            <h1>
+                Passport Strength &
+                Global Mobility Inequality
+            </h1>
+
+            <p class="hero-text">
+                An interactive research project exploring how citizenship shapes 
+                global mobility through visa-free travel access. Combining 
+                geospatial analysis, interactive maps and statistical visualisations, 
+                the project explores global inequalities in mobility regimes.
+            </p>
+
+            <div class="hero-author">
+                Kuba Helene
+            </div>
+
+        </div>
+
+        <button class="scroll-hint" id="enterProject">
+            Scroll to explore ↓
+        </button>
+
+    </section>
+
+    <!-- ================= APPLICATION ================= -->
+
+    <div id="app">
+
+        <!-- ================= HEADER ================= -->
+
+        <header id="topBanner">
+
+            <button id="mobileMenuButton" aria-label="Open menu">
+                ☰
+            </button>
+
+            <div class="headerContent">
+
+                <div class="headerLabel">
+                    PASSPORT MOBILITY INDEX
+                </div>
+
+                <h1>
+                    Passport Strength & Global Mobility Inequality
+                </h1>
+
+                <p id="headerSubtitle">
+                    Interactive mapping and statistical comparison of visa-free travel access
+                </p>
+
+            </div>
+
+            <a href="#hero" class="about-link">
+                About
+            </a>
+
+        </header>
+
+        <!-- ================= NAVIGATION ================= -->
+
+        <nav id="sideMenu">
+
+            <button id="scoreMode" class="active">
+                Passport Strength
+            </button>
+
+            <button id="ringsMode">
+                Regional Accessibility
+            </button>
+
+            <button id="visaMode">
+                Visa-Free Access
+            </button>
+
+            <button id="distributionMode">
+                Regional Distribution
+            </button>
+
+            <button id="extremesMode">
+                Global Extremes
+            </button>
+
+        </nav>
+
+        <!-- ================= INFO ================= -->
+
+        <div id="infoBox">
+
+            <strong>Loading data...</strong><br>
+            Please wait.
+
+        </div>
+
+        <!-- ================= REGIONAL LEGEND ================= -->
+
+        <div id="ringLegend" class="ring-legend hidden">
+
+            <strong>Regional Accessibility</strong>
+
+            <div><span class="legend-dot africa"></span>Africa</div>
+            <div><span class="legend-dot americas"></span>Americas</div>
+            <div><span class="legend-dot asia"></span>Asia</div>
+            <div><span class="legend-dot europe"></span>Europe</div>
+            <div><span class="legend-dot oceania"></span>Oceania</div>
+
+        </div>
+
+        <!-- ================= PASSPORT LEGEND ================= -->
+
+        <div id="mapLegend" class="score-legend">
+
+            <strong>Passport Strength</strong>
+
+            <div class="legend-scale">
+
+                <div class="legend-gradient"></div>
+
+                <div class="legend-labels">
+
+                    <span>23</span>
+                    <span>45</span>
+                    <span>65</span>
+                    <span>85</span>
+                    <span>120</span>
+                    <span>145</span>
+                    <span>170</span>
+                    <span>192</span>
+
+                </div>
+
+            </div>
+
+            <div class="legend-caption">
+                Weak mobility access → Strong mobility access
+            </div>
+
+        </div>
+
+        <!-- ================= MAP ================= -->
+
+        <div id="map"></div>
+
+        <div id="globe"></div>
+
+        <!-- ================= REGIONAL DISTRIBUTION ================= -->
+
+        <main id="distributionView" class="chart-view hidden">
+
+            <section class="chart-card">
+
+                <div class="sectionLabel">
+                    Statistical Overview
+                </div>
+
+                <h2>
+                    Passport strength distribution by world region
+                </h2>
+
+                <p class="chart-subtitle">
+                    Minimum, median and maximum passport strength scores across world regions
+                </p>
+
+                <div id="distributionChart" class="custom-chart"></div>
+
+            </section>
+
+        </main>
+
+        <!-- ================= GLOBAL EXTREMES ================= -->
+
+        <main id="extremesView" class="chart-view hidden">
+
+            <section class="chart-card">
+
+                <div class="sectionLabel">
+                    Comparative Analysis
+                </div>
+
+                <h2>
+                    Global extremes of passport strength
+                </h2>
+
+                <p class="chart-subtitle">
+                    Comparison of the strongest and weakest passports worldwide
+                </p>
+
+                <div id="extremesChart" class="custom-chart"></div>
+
+            </section>
+
+        </main>
+
+        <div id="chartTooltip" class="chart-tooltip hidden"></div>
+
+    </div>
+
+    <!-- ================= SCRIPTS ================= -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
