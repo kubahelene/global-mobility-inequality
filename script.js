@@ -35,6 +35,7 @@ let globeSelectedPassport = null;
 let globeHoveredIso = null;
 
 let pinnedCountry = null;
+let pinnedRegionalCountries = [];
 
 const totalCountries = 195;
 
@@ -450,97 +451,64 @@ function calculateRegionCounts(visaFreeCountries) {
     return regionCounts;
 }
 
-function getMaxRegionCounts() {
-    const maxValues = {
-        Europe: 0,
-        Asia: 0,
-        Africa: 0,
-        Americas: 0,
-        Oceania: 0
-    };
-
-    Object.keys(visaAccessData).forEach(passportIso => {
-        const counts = calculateRegionCounts(visaAccessData[passportIso]);
-
-        Object.keys(maxValues).forEach(region => {
-            if (counts[region] > maxValues[region]) {
-                maxValues[region] = counts[region];
-            }
-        });
-    });
-
-    return maxValues;
-}
-
-function getRingRadius(value, maxValue) {
-    if (!value || !maxValue) return 0;
-    return 3 + Math.sqrt(value / maxValue) * 32;
-}
-
-function getBetterRingCenter(iso, layer) {
-    const manualCenters = {
-        USA: [39.5, -98.35],
-        CAN: [56.1, -106.3],
-        BRA: [-10.8, -52.9],
-        RUS: [61.5, 90.0],
-        CHN: [35.9, 104.2],
-        AUS: [-25.3, 133.8],
-        FRA: [46.2, 2.2],
-        GBR: [54.0, -2.5],
-        DNK: [56.0, 10.0]
-    };
-
-    if (manualCenters[iso]) {
-        return L.latLng(manualCenters[iso][0], manualCenters[iso][1]);
-    }
-
-    return layer.getBounds().getCenter();
+function clearRegionalRings() {
+    regionalRingLayer.clearLayers();
 }
 
 function drawRegionalAccessibilityRings() {
-    // intentionally empty now:
-    // regional rings are only drawn on hover
-    clearRegionalRings();
+    regionalRingLayer.clearLayers();
 }
 
-function drawRegionalAccessibilityRingsForCountry(iso, layer) {
+function drawRegionalAccessibilityRingsForCountry(iso, layer, keepExisting = false) {
     if (!geojsonLayer || !regionalRingLayer) return;
 
-    regionalRingLayer.clearLayers();
+    if (!keepExisting) {
+        regionalRingLayer.clearLayers();
+    }
 
     const visaFreeCountries = visaAccessData[iso];
-
     if (!visaFreeCountries) return;
 
-    const maxValues = getMaxRegionCounts();
     const center = getBetterRingCenter(iso, layer);
     const counts = calculateRegionCounts(visaFreeCountries);
 
-    const ringItems = Object.keys(regionRingColors)
-        .map(region => ({
-            region,
-            value: counts[region],
-            radius: getRingRadius(counts[region], maxValues[region])
-        }))
-        .filter(item => item.value > 0)
-        .sort((a, b) => b.radius - a.radius);
+    const rings = Object.keys(regionRingColors)
+        .map(region => {
+            const value = counts[region];
+            const total = regionGroups[region].length;
+            const ratio = total > 0 ? value / total : 0;
 
-    ringItems.forEach(item => {
-        L.circleMarker(center, {
-            radius: item.radius,
-            color: regionRingColors[item.region],
-            weight: 1.4,
-            opacity: 0.85,
-            fillColor: regionRingColors[item.region],
-            fillOpacity: 0.04,
-            interactive: false
-        }).addTo(regionalRingLayer);
+            return { region, value, total, ratio };
+        })
+        .filter(item => item.value > 0)
+        .sort((a, b) => a.ratio - b.ratio);
+
+    let currentRadius = 6;
+
+    rings.forEach(item => {
+        const thickness = Math.max(5, item.ratio * 28);
+        currentRadius += thickness;
+        item.outerRadius = currentRadius;
     });
+
+    rings
+        .slice()
+        .sort((a, b) => b.outerRadius - a.outerRadius)
+        .forEach(item => {
+            L.circleMarker(center, {
+                radius: item.outerRadius,
+                color: "#f7f7f7",
+                weight: 0.9,
+                opacity: 0.95,
+                fillColor: regionRingColors[item.region],
+                fillOpacity: 0.35,
+                interactive: false
+            }).addTo(regionalRingLayer);
+        });
 }
 
 function getBetterRingCenter(iso, layer) {
     const customCenters = {
-        // Large countries
         USA: [39.5, -98.35],
         CAN: [56.13, -106.35],
         RUS: [61.5, 90.0],
@@ -551,8 +519,6 @@ function getBetterRingCenter(iso, layer) {
         IDN: [-2.5, 118.0],
         JPN: [36.2, 138.25],
         NZL: [-41.0, 174.0],
-
-        // Countries with islands / overseas territories
         PRT: [39.6, -8.0],
         ESP: [40.4, -3.7],
         FRA: [46.6, 2.2],
@@ -560,8 +526,6 @@ function getBetterRingCenter(iso, layer) {
         NLD: [52.1, 5.3],
         DNK: [56.0, 10.0],
         NOR: [61.0, 8.0],
-
-        // Island states / small territories
         ISL: [64.96, -19.02],
         IRL: [53.4, -8.2],
         CUB: [21.52, -77.78],
@@ -599,47 +563,88 @@ function getBetterRingCenter(iso, layer) {
     return layer.getBounds().getCenter();
 }
 
-function showRegionalAccessibilityInfo(iso, country) {
+function formatRegionalValue(regionCounts, region) {
+    const value = regionCounts[region];
+    const total = regionGroups[region].length;
+    const percent = Math.round((value / total) * 100);
+
+    return value + " / " + total + " (" + percent + "%)";
+}
+
+function buildRegionalInfoHTML(iso, country, removable = false) {
     const visaFreeCountries = visaAccessData[iso];
 
     if (!visaFreeCountries) {
-        infoBox.classList.add("compact");
-
-        infoBox.innerHTML =
-            "<strong style='display:block;margin-bottom:0;'>" + country + "</strong>" +
-            "No regional accessibility data available.";
-        return;
+        return (
+            "<div class='regional-card'>" +
+                "<strong>" + country + "</strong><br>" +
+                "No regional accessibility data available." +
+            "</div>"
+        );
     }
 
     const regionCounts = calculateRegionCounts(visaFreeCountries);
 
-    infoBox.classList.add("compact");
+    return (
+        "<div class='regional-card'>" +
+            "<div class='regional-card-header'>" +
+                "<strong>" + country + "</strong>" +
+                (removable ? "<button class='regional-remove' onclick='removePinnedRegionalCountry(\"" + iso + "\")'>×</button>" : "") +
+            "</div>" +
+
+            "<div class='regional-subtitle'>Visa-free destinations by region</div>" +
+
+            "<div class='region-grid'>" +
+                "<div><span class='legend-dot africa'></span>Africa: " + formatRegionalValue(regionCounts, "Africa") + "</div>" +
+                "<div><span class='legend-dot europe'></span>Europe: " + formatRegionalValue(regionCounts, "Europe") + "</div>" +
+                "<div><span class='legend-dot americas'></span>Americas: " + formatRegionalValue(regionCounts, "Americas") + "</div>" +
+                "<div><span class='legend-dot oceania'></span>Oceania: " + formatRegionalValue(regionCounts, "Oceania") + "</div>" +
+                "<div><span class='legend-dot asia'></span>Asia: " + formatRegionalValue(regionCounts, "Asia") + "</div>" +
+            "</div>" +
+        "</div>"
+    );
+}
+
+function showRegionalAccessibilityInfo(iso, country) {
+    infoBox.classList.add("compact", "wide");
+    infoBox.innerHTML = buildRegionalInfoHTML(iso, country, false);
+}
+
+function renderPinnedRegionalComparison() {
+    clearRegionalRings();
+
+    if (pinnedRegionalCountries.length === 0) {
+        setRegionalDefaultInfo();
+        return;
+    }
+
+    pinnedRegionalCountries.forEach(item => {
+        drawRegionalAccessibilityRingsForCountry(item.iso, item.layer, true);
+    });
+
+    infoBox.classList.add("compact", "wide");
 
     infoBox.innerHTML =
-        "<strong style='display:block;margin-bottom:0;'>" + country + "</strong>" +
-        "Visa-free destinations by region" +
-
+        "<strong>Regional comparison</strong><br>" +
+        "<span class='region-caption'>Up to three selected passports</span>" +
         "<div style='height:8px;'></div>" +
+        pinnedRegionalCountries
+            .map(item => buildRegionalInfoHTML(item.iso, item.country, true))
+            .join("");
+}
 
-        "<div class='region-grid'>" +
-            "<div>Africa: " + regionCounts.Africa + "</div>" +
-            "<div>Europe: " + regionCounts.Europe + "</div>" +
-
-            "<div>Americas: " + regionCounts.Americas + "</div>" +
-            "<div>Oceania: " + regionCounts.Oceania + "</div>" +
-
-            "<div>Asia: " + regionCounts.Asia + "</div>" +
-        "</div>";
+function removePinnedRegionalCountry(iso) {
+    pinnedRegionalCountries = pinnedRegionalCountries.filter(item => item.iso !== iso);
+    renderPinnedRegionalComparison();
 }
 
 function setRegionalDefaultInfo() {
-    infoBox.classList.remove("compact");
+    infoBox.classList.remove("compact", "wide");
 
     infoBox.innerHTML =
         "<strong>Regional Accessibility</strong><br>" +
-        "Each coloured ring represents one world region.<br>" +
-        "Ring size indicates the number of visa-free destinations.<br><br>" +
-        "Hover over a country to explore its regional accessibility.";
+        "Hover over a country to explore regional visa-free accessibility.<br><br>" +
+        "Click up to three countries to compare them.";
 }
 
 /* ---------------- VIEW HANDLING ---------------- */
@@ -708,8 +713,8 @@ function setScoreMode() {
     showMapView(scoreMode);
     updateLegendVisibility();
 
-    infoBox.classList.remove("compact");
-
+    infoBox.classList.remove("compact", "wide");   
+    
     infoBox.innerHTML =
         "<strong>Passport Strength</strong><br>Hover over a country to see its passport score.";
 
@@ -736,7 +741,7 @@ function setVisaMode() {
     showMapView(visaMode);
     updateLegendVisibility();
 
-    infoBox.classList.remove("compact");
+    infoBox.classList.remove("compact", "wide");
 
     infoBox.innerHTML =
         "<strong>Visa-Free Access</strong><br>Hover over a country to see its visa-free access.";
@@ -755,21 +760,27 @@ function setVisaMode() {
 function setRegionalAccessibilityMode() {
     currentView = "2d";
     currentMode = "regional";
+
     pinnedCountry = null;
+    pinnedRegionalCountries = [];
 
     activateViewButton(view2D);
-    if (view3D) view3D.classList.add("disabled");
+
+    if (view3D) {
+        view3D.classList.add("disabled");
+    }
 
     document.body.classList.remove("globe-active");
+
     mapDiv.style.display = "block";
     globeDiv.style.display = "none";
 
     clearRegionalRings();
     showMapView(ringsMode);
-    updateLegendVisibility();
+    hidePassportLegend();
 
     if (ringLegend) {
-        ringLegend.classList.remove("hidden");
+        ringLegend.classList.add("hidden");
     }
 
     setRegionalDefaultInfo();
@@ -777,10 +788,11 @@ function setRegionalAccessibilityMode() {
     if (geojsonLayer) {
         geojsonLayer.setStyle(regionalNeutralStyle);
         map.closePopup();
-        drawRegionalAccessibilityRings();
     }
 
-    setTimeout(() => map.invalidateSize(), 100);
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
 }
 
 /* ---------------- VISA ACCESS 2D ---------------- */
@@ -790,7 +802,7 @@ function resetVisaModeView() {
 
     geojsonLayer.setStyle(visaNeutralStyle);
 
-    infoBox.classList.remove("compact");
+    infoBox.classList.remove("compact", "wide");
 
     infoBox.innerHTML =
         "<strong>Visa-Free Access</strong><br>Hover over a country to see its visa-free access.";
@@ -1409,14 +1421,21 @@ function drawLeafletMap(worldData) {
 
         if (currentMode === "regional") {
 
+            geojsonLayer.setStyle(regionalNeutralStyle);
+
             e.target.setStyle({
-                weight: 1.0,
-               color: "#222222"
+                fillColor: "#d4cebf",
+                fillOpacity: 1,
+                color: "#222222",
+                weight: 1,
+                opacity: 1
             });
 
-            drawRegionalAccessibilityRingsForCountry(iso, layer);
-            showRegionalAccessibilityInfo(iso, country);
+            if (pinnedRegionalCountries.length === 0) {
+                drawRegionalAccessibilityRingsForCountry(iso, layer);
+            }
 
+            showRegionalAccessibilityInfo(iso, country);
         }
     },
 
@@ -1463,8 +1482,24 @@ function drawLeafletMap(worldData) {
         }
 
         if (currentMode === "regional") {
-            showRegionalAccessibilityInfo(iso, country);
+            const alreadyPinned = pinnedRegionalCountries.find(item => item.iso === iso);
+
+            if (alreadyPinned) {
+                pinnedRegionalCountries = pinnedRegionalCountries.filter(item => item.iso !== iso);
+            } else {
+                if (pinnedRegionalCountries.length >= 3) {
+                    pinnedRegionalCountries.shift();
         }
+
+                pinnedRegionalCountries.push({
+                    iso,
+                    layer,
+                    country
+                });
+    }
+
+    renderPinnedRegionalComparison();
+}
     },
 
     mouseout: function(e) {
@@ -1477,7 +1512,7 @@ function drawLeafletMap(worldData) {
 
             if (!pinnedCountry) {
 
-                infoBox.classList.remove("compact");
+                infoBox.classList.remove("compact", "wide");
 
                 infoBox.innerHTML =
                     "<strong>Passport Strength</strong><br>" +
@@ -1494,18 +1529,15 @@ function drawLeafletMap(worldData) {
 
         if (currentMode === "regional") {
 
-        e.target.setStyle({
-                fillColor: "#d4cebf",
-                fillOpacity: 1,
-                color: "#f7f7f7",
-               weight: 0.3,
-                opacity: 1
-            });
+            e.target.setStyle(regionalNeutralStyle());
 
-            clearRegionalRings();
-            setRegionalDefaultInfo();
-
-        }
+            if (pinnedRegionalCountries.length === 0) {
+                clearRegionalRings();
+                setRegionalDefaultInfo();
+            } else {
+                renderPinnedRegionalComparison();
+    }
+}
     }
 
 });
