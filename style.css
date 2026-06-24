@@ -333,7 +333,7 @@ body.globe-active #globe {
     padding: 16px 18px;
 
     font-size: 12px;
-    line-height: 1.65;
+    line-height: 1;
 
     box-shadow: none;
 }
@@ -1277,7 +1277,7 @@ body {
 
     font-size: 12px;
     font-weight: 700;
-
+    margin-left: 5px;
     letter-spacing: .18em;
     text-transform: uppercase;
 }
@@ -1291,7 +1291,7 @@ body {
 
     font-size: clamp(56px, 7vw, 92px);
 
-    line-height: .92;
+    line-height: 1.2;
 
     font-weight: 800;
 
@@ -1435,21 +1435,21 @@ body {
     color: white;
 
     font-size: clamp(56px, 7vw, 92px);
-    line-height: .92;
+    line-height: 1;
     font-weight: 800;
 
     letter-spacing: -0.055em;
 }
 
 .hero-text {
-    max-width: 760px;
+    max-width: 850px;
 
-    margin-bottom: 52px;
+    margin-bottom: 55px;
 
     color: rgba(255,255,255,.72);
 
     font-size: 21px;
-    line-height: 1.65;
+    line-height: 1.4;
 }
 
 .hero-button {

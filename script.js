@@ -643,8 +643,7 @@ function setRegionalDefaultInfo() {
 
     infoBox.innerHTML =
         "<strong>Regional Accessibility</strong><br>" +
-        "Hover over a country to explore regional visa-free accessibility.<br><br>" +
-        "Click up to three countries to compare them.";
+        "Hover over a country to see its visa-free destinations by continent and select up to three countries for comparison.";
 }
 
 /* ---------------- VIEW HANDLING ---------------- */
@@ -1271,7 +1270,7 @@ function renderExtremesChart() {
     const note185 = document.createElement("div");
     note185.className = "chart-note";
     note185.innerHTML =
-        "* Score 185 shared by Belgium, Denmark, Finland, France, Germany, Ireland, Italy, Luxembourg, Netherlands, Norway, Spain and Switzerland.";
+        "*Score 185 shared by Belgium, Denmark, Finland, France, Germany, Ireland, Italy, Luxembourg, Netherlands, Norway, Spain and Switzerland.";
     chart.appendChild(note185);
 
     const lowTitle = document.createElement("div");
@@ -1286,7 +1285,7 @@ function renderExtremesChart() {
     const note38 = document.createElement("div");
     note38.className = "chart-note";
     note38.innerHTML =
-        "* Score 38 shared by Eritrea, Iran and Palestine.";
+        "*Score 38 shared by Eritrea, Iran and Palestine.";
     chart.appendChild(note38);
 }
 
