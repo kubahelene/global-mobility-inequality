@@ -1223,9 +1223,9 @@ body.score-legend-active .score-legend {
         display: flex;
         align-items: flex-start;
         gap: 14px;
-        height: 126px;
-        min-height: 126px;
-        padding: 16px 18px;
+        height: 102px;
+        min-height: 102px;
+        padding: 14px 18px;
     }
 
     #mobileMenuButton {
@@ -1242,38 +1242,41 @@ body.score-legend-active .score-legend {
     }
 
     #topBanner h1 {
-        font-size: 25px;
-        line-height: 0.95;
+        font-size: 20px;
+        line-height: 0.92;
+        letter-spacing: -0.04em;
     }
 
     #headerSubtitle {
-        font-size: 10px;
-        line-height: 1.25;
+        font-size: 8px;
+        line-height: 1.2;
     }
 
     .headerLabel {
         font-size: 10px;
         margin-bottom: 5px;
+        letter-spacing: 0.18em;
+
     }
 
     #map,
     #globe,
     .leaflet-container {
-        top: 126px !important;
-        height: calc(100vh - 126px) !important;
+        top: 102px !important;
+        height: calc(100vh - 102px) !important;
     }
 
     #sideMenu {
         display: none;
         width: calc(100vw - 32px);
         left: 16px;
-        top: 142px;
+        top: 118px;
         z-index: 9500;
     }
 
     #sideMenu.mobile-open {
         display: block;
-        top: 142px;
+        top: 118px;
     }
 
     #sideMenu button {
@@ -1331,7 +1334,7 @@ body.score-legend-active .score-legend {
     }
 
     .chart-view {
-        top: 126px;
+        top: 102px;
         padding: 18px 14px;
     }
 
