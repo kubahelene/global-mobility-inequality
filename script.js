@@ -1665,3 +1665,17 @@ if (enterProject) {
         });
     });
 }
+
+// Hide legends when mobile menu is open
+setInterval(() => {
+    const menuOpen = document
+        .getElementById("sideMenu")
+        ?.classList.contains("mobile-open");
+
+    if (menuOpen) {
+        document.getElementById("mapLegend")?.classList.add("hidden");
+        document.getElementById("ringLegend")?.classList.add("hidden");
+    } else {
+        updateLegendVisibility();
+    }
+}, 100);

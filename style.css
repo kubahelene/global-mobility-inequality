@@ -1129,6 +1129,12 @@ body.score-legend-active .score-legend {
     border-radius: 0 !important;
 }
 
+@media (max-width: 600px) {
+    .leaflet-control-zoom {
+        display: none !important;
+    }
+}
+
 .leaflet-popup-content-wrapper {
     border-radius: 0 !important;
     border: 1px solid var(--line);
@@ -1151,20 +1157,26 @@ body.score-legend-active .score-legend {
 
 @media (max-width: 900px) {
     #topBanner {
-        height: 112px;
-        min-height: 112px;
-        padding: 18px 18px;
+        height: 104px;
+        min-height: 104px;
+        padding: 16px 18px;
     }
 
     #topBanner h1 {
-        font-size: 18px;
-        line-height: 0.95;
+        font-size: 13px;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
     }
 
     #topBanner p,
     #headerSubtitle {
-        font-size: 7px;
-        line-height: 1.25;
+        font-size: 6px;
+        line-height: 1.2;
+    }
+
+    .headerLabel {
+        font-size: 8px;
+        letter-spacing: 0.14em;
     }
 
     .about-link {
@@ -1173,13 +1185,13 @@ body.score-legend-active .score-legend {
 
     #map,
     #globe {
-        top: 112px;
-        height: calc(100vh - 112px);
+        top: 104px;
+        height: calc(100vh - 104px);
     }
 
     #sideMenu {
         left: 16px;
-        top: 128px;
+        top: 118px;
         width: 230px;
     }
 
@@ -1195,7 +1207,7 @@ body.score-legend-active .score-legend {
     }
 
     .chart-view {
-        top: 112px;
+        top: 104px;
         padding: 28px 18px;
     }
 
@@ -1213,23 +1225,21 @@ body.score-legend-active .score-legend {
         line-height: 1.35;
     }
 
-    .chart-row {
-        grid-template-columns: 1fr;
-    }
-
+    .chart-row,
     .extreme-row {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 600px) {
+
     #topBanner {
         display: flex;
         align-items: flex-start;
-        gap: 14px;
-        height: 102px;
-        min-height: 102px;
-        padding: 14px 10px;
+        gap: 10px;
+        height: 94px;
+        min-height: 94px;
+        padding: 12px 10px;
     }
 
     #mobileMenuButton {
@@ -1246,41 +1256,41 @@ body.score-legend-active .score-legend {
     }
 
     #topBanner h1 {
-        font-size: 20px;
-        line-height: 0.92;
-        letter-spacing: -0.04em;
+        font-size: 12px;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+        max-width: calc(100vw - 80px);
     }
 
     #headerSubtitle {
-        font-size: 8px;
-        line-height: 1.2;
+        font-size: 6px;
+        line-height: 1.15;
     }
 
     .headerLabel {
-        font-size: 10px;
-        margin-bottom: 5px;
-        letter-spacing: 0.18em;
-
+        font-size: 7px;
+        margin-bottom: 4px;
+        letter-spacing: 0.12em;
     }
 
     #map,
     #globe,
     .leaflet-container {
-        top: 102px !important;
-        height: calc(100vh - 102px) !important;
+        top: 94px !important;
+        height: calc(100vh - 94px) !important;
     }
 
     #sideMenu {
         display: none;
         width: calc(100vw - 32px);
         left: 16px;
-        top: 118px;
+        top: 108px;
         z-index: 9500;
     }
 
     #sideMenu.mobile-open {
         display: block;
-        top: 118px;
+        top: 108px;
     }
 
     #sideMenu button {
@@ -1292,11 +1302,10 @@ body.score-legend-active .score-legend {
         position: fixed !important;
         left: 16px !important;
         right: 16px !important;
-        top: auto !important;
         bottom: 16px !important;
         width: auto !important;
         max-width: none !important;
-        max-height: 30vh !important;
+        max-height: 28vh !important;
         overflow-y: auto !important;
         font-size: 12px !important;
         line-height: 1.35;
@@ -1308,27 +1317,27 @@ body.score-legend-active .score-legend {
         width: auto !important;
     }
 
+    /* Legenden oben links */
+
     #mapLegend,
     #ringLegend {
         position: fixed !important;
         left: 16px !important;
-        right: 16px !important;
-        top: auto !important;
-        bottom: 16px !important;
-        width: auto !important;
-        max-width: none !important;
-        font-size: 12px !important;
-        padding: 16px 18px !important;
+        top: 108px !important;
+        right: auto !important;
+        bottom: auto !important;
+
+        width: 220px !important;
+        max-width: calc(100vw - 32px) !important;
+
+        font-size: 11px !important;
+        padding: 14px 16px !important;
+
         z-index: 8500 !important;
     }
 
-    body.score-legend-active #infoBox {
-        bottom: 150px !important;
-        max-height: 24vh !important;
-    }
-
     .legend-caption {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .region-grid {
@@ -1338,7 +1347,7 @@ body.score-legend-active .score-legend {
     }
 
     .chart-view {
-        top: 102px;
+        top: 94px;
         padding: 18px 14px;
     }
 
@@ -1362,9 +1371,10 @@ body.score-legend-active .score-legend {
         font-size: 14px;
     }
 
-    .leaflet-top.leaflet-left {
-        left: 16px !important;
-        bottom: 16px !important;
+    /* Zoom-Buttons ausblenden */
+
+    .leaflet-control-zoom {
+        display: none !important;
     }
 
     .leaflet-control-attribution {
@@ -1856,5 +1866,47 @@ body {
         width: max-content;
         z-index: 99999 !important;
         pointer-events: none;
+    }
+}
+
+/* FINAL MOBILE HEADER OVERRIDE */
+
+@media (max-width: 768px) {
+
+    #topBanner {
+        height: 94px !important;
+        min-height: 94px !important;
+        padding: 12px 10px !important;
+    }
+
+    #topBanner h1 {
+        font-size: 19px !important;
+        line-height: 0.9 !important;
+        letter-spacing: -0.03em !important;
+        max-width: calc(100vw - 80px) !important;
+    }
+
+    #headerSubtitle,
+    #topBanner p {
+        font-size: 9px !important;
+        line-height: 1.15 !important;
+    }
+
+    #topBanner .headerLabel,
+    .headerLabel {
+        font-size: 11px !important;
+        margin-bottom: 4px !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    #map,
+    #globe,
+    .leaflet-container {
+        top: 94px !important;
+        height: calc(100vh - 94px) !important;
+    }
+
+    .leaflet-control-zoom {
+        display: none !important;
     }
 }
