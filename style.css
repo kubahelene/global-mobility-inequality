@@ -1141,6 +1141,12 @@ body.score-legend-active .score-legend {
     display: none;
 }
 
+@media (max-width: 600px) {
+    #closeMenuButton {
+        display: block;
+    }
+}
+
 @media (max-width: 900px) {
     #topBanner {
         height: auto;
