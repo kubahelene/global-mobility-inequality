@@ -17,6 +17,11 @@ const worldBounds = L.latLngBounds(
 map.setMaxBounds(worldBounds);
 map.options.maxBoundsViscosity = 1.0;
 
+if (window.innerWidth <= 768) {
+    map.options.maxBoundsViscosity = 0;
+    map.setMinZoom(0.8);
+    map.setView([20, 0], 1.15);
+}
 
 const scoreField = "Henley_PassportScore — PassportIndex2026_passport_score";
 const countryField = "Henley_PassportScore — PassportIndex2026_country";
@@ -1545,12 +1550,16 @@ function drawLeafletMap(worldData) {
 
     try {
 
-        map.fitBounds(
-            geojsonLayer.getBounds(),
-            {
-                padding: [20, 20]
-            }
-        );
+        if (window.innerWidth <= 768) {
+            map.setView([20, 0], 1.15);
+        } else {
+            map.fitBounds(
+                geojsonLayer.getBounds(),
+                {
+                    padding: [20, 20]
+                }
+            );
+        }
 
     } catch (error) {
 
@@ -1602,6 +1611,10 @@ map.on("click", () => {
 
 window.addEventListener("resize", () => {
     map.invalidateSize();
+
+    if (window.innerWidth <= 768) {
+        map.setView(map.getCenter(), 1.15);
+    }
 });
 
 /* ---------------- DEBUG ---------------- */
@@ -1638,7 +1651,7 @@ if (mobileMenuButton && sideMenu) {
 }
 
 function closeMobileMenu() {
-    if (window.innerWidth <= 600 && sideMenu) {
+    if (window.innerWidth <= 768 && sideMenu) {
         sideMenu.classList.remove("mobile-open");
     }
 }
