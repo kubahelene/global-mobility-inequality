@@ -20,7 +20,7 @@ map.options.maxBoundsViscosity = 1.0;
 if (window.innerWidth <= 768) {
     map.options.maxBoundsViscosity = 0;
     map.setMinZoom(0.8);
-    map.setView([20, 0], 1.15);
+    map.setView([20, 0], 1.05);
 }
 
 const scoreField = "Henley_PassportScore — PassportIndex2026_passport_score";
