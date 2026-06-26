@@ -71,6 +71,10 @@ html {
     flex-direction: column;
 }
 
+.headerContent {
+    margin-left: -4px;
+}
+
 .headerLabel {
     margin-bottom: 6px;
 
@@ -1153,13 +1157,13 @@ body.score-legend-active .score-legend {
     }
 
     #topBanner h1 {
-        font-size: 26px;
+        font-size: 18px;
         line-height: 0.95;
     }
 
     #topBanner p,
     #headerSubtitle {
-        font-size: 11px;
+        font-size: 7px;
         line-height: 1.25;
     }
 
@@ -1225,18 +1229,18 @@ body.score-legend-active .score-legend {
         gap: 14px;
         height: 102px;
         min-height: 102px;
-        padding: 14px 18px;
+        padding: 14px 10px;
     }
 
     #mobileMenuButton {
         display: block;
         background: transparent;
         border: none;
-        font-size: 26px;
+        font-size: 22px;
         font-weight: 800;
         color: var(--paper-light);
         padding: 0;
-        margin-top: 18px;
+        margin-top: 10px;
         cursor: pointer;
         flex-shrink: 0;
     }
